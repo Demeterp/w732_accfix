@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+        >
+    <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+        <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Check Driver"
+                    android:id="@+id/btCheck" android:layout_gravity="center_horizontal|bottom|top" android:layout_column="0"
+                    android:clickable="true" android:focusable="false" android:enabled="true"
+                    android:onClick="btCheck_Click"
+                    />
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:text="Debug Driver"
+                    android:id="@+id/btRoot" android:layout_column="1" android:clickable="true" android:enabled="true"
+                    android:onClick="btRoot_Click"
+                    />
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Install Driver"
+                    android:id="@+id/btInstall" android:layout_gravity="center_vertical|right" android:singleLine="true"
+                    android:minLines="1" android:maxLines="1" android:lines="1" android:layout_column="2"
+                    android:clickable="true" android:enabled="true"
+                    android:onClick="btInstall_Click"
+                    />
+        </TableRow>
+    </TableLayout>
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Press any key for a key code/ndd"
+            android:id="@+id/textKey" android:singleLine="false"/>
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="Call log is empty."
+            android:id="@+id/textLog" android:maxLines="10000"
+            android:scrollbars = "vertical"
+            />
+</LinearLayout>
+

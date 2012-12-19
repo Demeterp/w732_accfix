@@ -1,0 +1,3 @@
+Contents of this folder shall be placed into src folder of your kernel to replace accdet driver.
+Folder path:
+TCL_E928/mediatek/platform/mt6575/kernel/drivers/accdet 
