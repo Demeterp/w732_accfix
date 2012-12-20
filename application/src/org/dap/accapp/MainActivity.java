@@ -2,11 +2,17 @@ package org.dap.accapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import org.dap.accapp.R;
@@ -21,12 +27,25 @@ public class MainActivity extends Activity {
 
     public static final String SDCARD_ACCFIX_KO = "/sdcard/accfix.ko";
     public static final String DEV_ACCFIX = "/dev/accfix";
+    private static final int IDM_EXIT = 101;
     TextView textKey;
     TextView textLog;
 
-    /**
-     * Called when the activity is first created.
-     */
+
+//    class IncomingHandler extends Handler {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            switch (msg.what) {
+//                case MessengerService.MSG_SET_VALUE:
+//                    mCallbackText.setText("Received from service: " + msg.arg1);
+//                    break;
+//                default:
+//                    super.handleMessage(msg);
+//            }
+//        }
+//    }
+//    final Messenger mMessenger = new Messenger(new IncomingHandler());
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,8 +58,6 @@ public class MainActivity extends Activity {
         textLog.setText("\n");
         textLog.setMovementMethod(new ScrollingMovementMethod());
 
-        // Get the telephony manager
-        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
         // Create a new PhoneStateListener
         PhoneStateListener listener = new PhoneStateListener() {
@@ -50,7 +67,6 @@ public class MainActivity extends Activity {
                 switch (state) {
                     case TelephonyManager.CALL_STATE_IDLE:
                         stateString = "Idle";
-                        writeState("rrr"); //1 char = idle
                         break;
                     case TelephonyManager.CALL_STATE_OFFHOOK:
                         stateString = "Off Hook";
@@ -58,33 +74,20 @@ public class MainActivity extends Activity {
                         break;
                     case TelephonyManager.CALL_STATE_RINGING:
                         stateString = "Ringing";
-                        writeState("rr"); //2 chars = ringing
                         break;
                 }
                 textLog.append(String.format("\nonCallStateChanged: %s", stateString));
             }
         };
 
-        // Register the listener wit the telephony manager
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         telephonyManager.listen(listener, PhoneStateListener.LISTEN_CALL_STATE);
+
+        Intent svc = new Intent(PhoneListenerService.class.getName());
+        startService(svc);
+        //bindService(svc, null, Context.BIND_AUTO_CREATE);
     }
 
-    private void writeState(String state){
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter(new File(DEV_ACCFIX));
-            fw.write(state);
-        } catch (IOException e) {
-            textLog.setText(e.toString());
-        } finally {
-            if (fw!=null){
-                try {
-                    fw.close();
-                } catch (IOException e) {
-                }
-            }
-        }
-    }
 
     public boolean onKeyDown(int keyCode, android.view.KeyEvent event) {
         textKey.setText("keyCode: " + keyCode + "\n" + event.toString());
@@ -93,6 +96,7 @@ public class MainActivity extends Activity {
 
     public void btCheck_Click(View v) {
         textLog.setText("\n");
+        textLog.scrollTo(0,0);
         File f = new File("/dev/accfix");
         if (f.exists()) {
             textLog.append("/dev/accfix driver is present\n");
@@ -116,7 +120,9 @@ public class MainActivity extends Activity {
         try {
             ProcessBuilder pb = new ProcessBuilder("su");
             pb.directory(new File("/sdcard"));
-            textLog.setText("\n");
+            textKey.setText("\n");
+            textLog.setText("");
+            textLog.scrollTo(0,0);
             textLog.append("dmesg | grep accfix\n");
             Process p = pb.start();
             DataOutputStream pOut = new DataOutputStream(p.getOutputStream());
@@ -152,6 +158,9 @@ public class MainActivity extends Activity {
     }
 
     public void btInstall_Click(View v) {
+        textLog.setText("");
+        textLog.scrollTo(0,0);
+
         if (!new File(SDCARD_ACCFIX_KO).exists()) {
             textLog.append("No " + SDCARD_ACCFIX_KO + " found!\n");
         } else {
@@ -186,5 +195,17 @@ public class MainActivity extends Activity {
             }
         }
 
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu){
+    	menu.add(Menu.NONE, IDM_EXIT, Menu.NONE, "Exit").setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item)  {
+        if (item.getItemId() == IDM_EXIT){
+            this.finish();
+        }
+        return true;
     }
 }

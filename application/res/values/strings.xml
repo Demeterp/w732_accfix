@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">accapp</string>
+    <string name="local_service_started">accfix_phone_listener_started</string>
 </resources>

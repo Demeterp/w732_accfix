@@ -101,19 +101,18 @@ public class PhoneListenerService extends IntentService {
 
     @Override
     public int onStartCommand(Intent ignoreIntent, int flags, int startId) {
-        Toast.makeText(this, "AccFixService Started", Toast.LENGTH_LONG).show();
-
+        //Toast.makeText(this, "AccFixService Started", Toast.LENGTH_LONG).show();
 
         //The intent to launch when the user clicks the expanded notification
-        Intent intent = new Intent(this, Service.class);
+        Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         //This constructor is deprecated. Use Notification.Builder instead
         Notification notice = new Notification(android.R.drawable.sym_def_app_icon, "AccFix Service Started", System.currentTimeMillis());
-
         //This method is deprecated. Use Notification.Builder instead.
-        notice.setLatestEventInfo(this, "I'm listening to phone calls", "", pendIntent);
+        notice.setLatestEventInfo(this, "I'm listening to phone calls", "So you accept calls with a headset button", pendIntent);
+
 
         notice.flags |= Notification.FLAG_NO_CLEAR;
         startForeground(myID, notice);
